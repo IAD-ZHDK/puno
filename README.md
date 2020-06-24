@@ -3,8 +3,10 @@ PUNO (Processing-Arduino) is a framework to program microcontrollers from within
 
 ## Setup
 
+### Install the Firmware
 To setup the firmware on an Arduino UNO WiFi Rev2, download and install the [WiFiNINA](https://github.com/arduino-libraries/WiFiNINA) library (or from [library manager](https://www.arduino.cc/en/guide/libraries#toc2)).
 
+### Find the Address
 To connect with an Ardunio, you first have to get its IP address. Follow the steps to obtain the address:
 
 1. Open Arduino IDE
@@ -17,7 +19,9 @@ The API is very similar to the default Arduino API. It is possible to read and w
 
 ### Connection
 
-- `setupPUNO(PApplet sketch)`
+- `setupPUNO(PApplet sketch)` - Initialises the PUNO driver. This method has to be called in `setup()`, before any other method.
+- `connectArduino(String address)` - Connects to a network Arduino device. The address is the [IP address](#Find the Address) of the device.
+- `connectWekinator()` - Connects PUNO to directly to a local instance of Wekinator. This instance should use the default ports.
 
 ### PIN
 
