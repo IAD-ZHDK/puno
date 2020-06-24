@@ -8,10 +8,7 @@ import netP5.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -101,6 +98,7 @@ public class PUNODriver {
 
     // setup
     public static void setupPUNO(PApplet sketch) {
+        System.out.println("setting up puno...");
         PUNODriver.sketch = sketch;
         sketch.frameRate(20);
 
@@ -108,6 +106,7 @@ public class PUNODriver {
     }
 
     public static void connectArduino(String address) {
+        System.out.println("trying to connect to " + address + "...");
         punoArduino = new PUNOChannel(address, 8000);
         punoArduino.open();
     }
@@ -209,24 +208,24 @@ public class PUNODriver {
 
     // pin
     public static void pinMode(int pin, int mode) {
-        punoArduino.send(PUNOProtocol.tPinMode, PUNOProtocol.opWrite, (byte)pin, (byte)mode);
+        punoArduino.send(PUNOProtocol.tPinMode, PUNOProtocol.opWrite, (byte) pin, (byte) mode);
     }
 
     public static void analogWrite(int pin, int value) {
-        punoArduino.send(PUNOProtocol.tAnalogPin, PUNOProtocol.opWrite, (byte)pin, (byte)value);
+        punoArduino.send(PUNOProtocol.tAnalogPin, PUNOProtocol.opWrite, (byte) pin, (byte) value);
     }
 
     public static void digitalWrite(int pin, int value) {
-        punoArduino.send(PUNOProtocol.tDigitalPin, PUNOProtocol.opWrite, (byte)pin, (byte)value);
+        punoArduino.send(PUNOProtocol.tDigitalPin, PUNOProtocol.opWrite, (byte) pin, (byte) value);
     }
 
     public static int digitalRead(int pin) {
-        punoArduino.send(PUNOProtocol.tDigitalPin, PUNOProtocol.opRead, (byte)pin);
+        punoArduino.send(PUNOProtocol.tDigitalPin, PUNOProtocol.opRead, (byte) pin);
         return punoArduino.read(0);
     }
 
     public static int analogRead(int pin) {
-        punoArduino.send(PUNOProtocol.tAnalogPin, PUNOProtocol.opRead, (byte)pin);
+        punoArduino.send(PUNOProtocol.tAnalogPin, PUNOProtocol.opRead, (byte) pin);
         return punoArduino.readInt(0);
     }
 
@@ -239,7 +238,7 @@ public class PUNODriver {
         float pitch = buffer.getFloat();
         float yaw = buffer.getFloat();
 
-        return new float[] {roll, pitch, yaw};
+        return new float[]{roll, pitch, yaw};
     }
 
     // others
@@ -266,8 +265,8 @@ public class PUNODriver {
         }
 
         public void writeInt(int index, int value) {
-            sendBuffer[index] = (byte)(value >> 8 & 0xFF);
-            sendBuffer[index + 1] = (byte)(value & 0xFF);
+            sendBuffer[index] = (byte) (value >> 8 & 0xFF);
+            sendBuffer[index + 1] = (byte) (value & 0xFF);
         }
 
         public int readInt(int index) {
@@ -280,13 +279,18 @@ public class PUNODriver {
 
         public void open() {
             try {
-                client = new Socket(address, port);
+                client = new Socket();
+                client.connect(new InetSocketAddress(address, port), 5000);
                 out = client.getOutputStream();
                 in = client.getInputStream();
+            } catch (IOException e) {
+                System.err.println("Connection Error: " + e.getMessage());
+                System.exit(1);
             }
-            catch (IOException e) {
-                System.err.println("error open: " + e.getMessage());
-            }
+        }
+
+        public boolean isOpen() {
+            return client.isConnected();
         }
 
         public int send(byte target, byte operation, String msg) {
@@ -302,7 +306,7 @@ public class PUNODriver {
             return sendRaw(sendBuffer, size);
         }
 
-        public int send(byte target, byte operation, int...params) {
+        public int send(byte target, byte operation, int... params) {
             int size = 2 + (params.length * 2);
 
             // add header
@@ -311,7 +315,7 @@ public class PUNODriver {
 
             // fill values
             int ptr = 2;
-            for(int i = 0; i < params.length; i++) {
+            for (int i = 0; i < params.length; i++) {
                 writeInt(ptr, params[i]);
                 ptr += 2;
             }
@@ -319,7 +323,7 @@ public class PUNODriver {
             return sendRaw(sendBuffer, size);
         }
 
-        public int send(byte target, byte operation, byte...params) {
+        public int send(byte target, byte operation, byte... params) {
             int size = 2 + params.length;
 
             // add header
@@ -359,8 +363,7 @@ public class PUNODriver {
                 // read buffer from stream
                 in.read(receiveBuffer, 0, size);
                 return size;
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.err.println("error sending: " + e.getMessage());
             } catch (InterruptedException e) {
                 System.err.println("error waiting: " + e.getMessage());
@@ -372,8 +375,7 @@ public class PUNODriver {
             try {
                 System.out.println("Server is closing...");
                 client.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.err.println("error closing: " + e.getMessage());
             }
         }
@@ -649,7 +651,7 @@ public class PUNODriver {
         public void run() {
             System.out.println("shutting down...");
 
-            if (punoArduino != null) {
+            if (punoArduino != null && punoArduino.isOpen()) {
                 Servo.halt(254);
                 punoArduino.close();
             }

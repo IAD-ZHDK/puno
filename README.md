@@ -15,11 +15,11 @@ To connect with an Ardunio, you first have to get its IP address. Follow the ste
 ## API
 The API is very similar to the default Arduino API. It is possible to read and write digital and analog pins, set pin modes and even some higher level methods to control [LSS](http://www.lynxmotion.com/c-189-smart-servos.aspx) servos.
 
-### Connection
+### Connection
 
 - `setupPUNO(PApplet sketch)`
 
-### PIN
+### PIN
 
 ### Servo
 
