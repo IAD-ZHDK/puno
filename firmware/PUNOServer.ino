@@ -35,18 +35,9 @@ void updatePUNO() {
 
     int size = client.available();
     if (size > 0) {
-      // read
-      /*
-        Serial.print("Packet [");
-        Serial.print(size);
-        Serial.println("]");
-      */
-
       for (int i = 0; i < size; i++) {
         receiveBuffer[i] = client.read();
-        //Serial.print((int)receiveBuffer[i], HEX);
       }
-      //Serial.println();
 
       // evaluate
       char target = read(0);

@@ -25,7 +25,7 @@ public class PUNODriver {
     private static final int TIME_OUT = 500;
 
     // mc send delay
-    private static final int SEND_DELAY = 66;
+    private static final int SEND_DELAY = 5;
 
     private static class NS {
         // arduino
@@ -102,7 +102,7 @@ public class PUNODriver {
     // setup
     public static void setupPUNO(PApplet sketch) {
         PUNODriver.sketch = sketch;
-        sketch.frameRate(30);
+        sketch.frameRate(20);
 
         ShutdownHandler handler = new ShutdownHandler();
     }
@@ -342,6 +342,8 @@ public class PUNODriver {
 
                 int size;
                 int waitCounter = 1;
+
+                sketch.delay(SEND_DELAY);
 
                 // wait for response
                 do {

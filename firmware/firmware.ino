@@ -7,7 +7,7 @@ void setup() {
   Serial.begin(9600);
   delay(500);
 
-  Serial.println("-----------------");
+  Serial.println("---------------");
   Serial.println("PUNO Server TCP");
 
   setupIMU();
