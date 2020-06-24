@@ -201,7 +201,7 @@ public class PUNODriver {
         }
 
         public static void sendRaw(String command) {
-            punoArduino.send(PUNOProtocol.tServo, PUNOProtocol.opWrite, command);
+            punoArduino.send(PUNOProtocol.tServo, PUNOProtocol.opWrite, command + "\0");
         }
     }
 
@@ -289,15 +289,14 @@ public class PUNODriver {
         }
 
         public int send(byte target, byte operation, String msg) {
-            int size = 2 + 1 + msg.length();
+            int size = 2 + msg.length();
 
             // add header
             sendBuffer[0] = target;
             sendBuffer[1] = operation;
-            sendBuffer[2] = (byte)msg.length();
 
             // fill payload
-            System.arraycopy(msg.getBytes(), 0, sendBuffer, 3, msg.length());
+            System.arraycopy(msg.getBytes(), 0, sendBuffer, 2, msg.length());
 
             return sendRaw(sendBuffer, size);
         }

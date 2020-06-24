@@ -129,5 +129,12 @@ int parse(int size, char target, char op) {
     return 0;
   }
 
+  // send servo command
+  if (target == tServo && op == opWrite) {
+    String cmd = String(receiveBuffer + 2);
+    lss_sendRaw(cmd);
+    return 0;
+  }
+
   return 0;
 }
