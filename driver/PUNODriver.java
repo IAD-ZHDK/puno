@@ -106,6 +106,7 @@ public class PUNODriver {
 
     public static void connectArduino(String address) {
         punoArduino = new PUNOChannel(address, 8000);
+        punoArduino.open();
     }
 
     public static void connectWekinator() {
@@ -277,12 +278,11 @@ public class PUNODriver {
         }
 
         public int readInt(int index) {
-            return ((receiveBuffer[index] & 0xFF) << 8)
-                    | receiveBuffer[index + 1] & 0xFF;
+            return (read(index) << 8) | read(index + 1);
         }
 
-        public byte read(int index) {
-            return receiveBuffer[index];
+        public int read(int index) {
+            return receiveBuffer[index] & 0xFF;
         }
 
         public void open() {
