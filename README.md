@@ -17,17 +17,22 @@ To connect with an Ardunio, you first have to get its IP address. Follow the ste
 ## API
 The API is very similar to the default Arduino API. It is possible to read and write digital and analog pins, set pin modes and even some higher level methods to control [LSS](http://www.lynxmotion.com/c-189-smart-servos.aspx) servos.
 
-### Connection
+### Setup & Connection
 
 - `setupPUNO(PApplet sketch)` - Initialises the PUNO driver. This method has to be called in `setup()`, before any other method.
-- `connectArduino(String address)` - Connects to a network Arduino device. The address is the [IP address](#Find the Address) of the device.
+- `connectArduino(String address)` - Connects to a network Arduino device. The address is the [IP address](#find-the-address) of the device.
 - `connectWekinator()` - Connects PUNO to directly to a local instance of Wekinator. This instance should use the default ports.
 
-### PIN
+### Digital & Analog Pins
 
 ### Servo
 
 ### IMU
 
+### Onboard LED
+
 ## Examples
 tbd
+
+## About
+Developed by Florian Bruggisser & Luke Franzke ZHdK 2020
