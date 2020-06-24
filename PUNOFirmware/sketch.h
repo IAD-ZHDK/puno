@@ -18,11 +18,12 @@
 #include <ArduinoMDNS.h>
 #endif
 
+// osc bridge
+#define ARDUINOOSC_MAX_SUBSCRIBE_ADDRESS_PER_PORT 20
+#include <ArduinoOSC.h>
+
 // lss
 #include <SoftwareSerial.h>
 
 // imu
 #include <Arduino_LSM6DS3.h>
-
-// global vars
-float complementaryRoll, complementaryPitch, complementaryYaw;  // units degrees (excellent roll, pitch, yaw minor drift)
