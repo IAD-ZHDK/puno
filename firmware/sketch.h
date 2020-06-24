@@ -18,10 +18,6 @@
 #include <ArduinoMDNS.h>
 #endif
 
-// osc bridge
-#define ARDUINOOSC_MAX_SUBSCRIBE_ADDRESS_PER_PORT 20
-#include <ArduinoOSC.h>
-
 // lss
 #include <SoftwareSerial.h>
 
