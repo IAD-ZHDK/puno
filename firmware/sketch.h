@@ -23,6 +23,3 @@
 
 // imu
 #include <Arduino_LSM6DS3.h>
-
-// global vars
-float complementaryRoll, complementaryPitch, complementaryYaw;  // units degrees (excellent roll, pitch, yaw minor drift)

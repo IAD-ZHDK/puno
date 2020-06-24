@@ -1,9 +1,11 @@
+
 float accelX,            accelY,             accelZ,            // units m/s/s i.e. accelZ if often 9.8 (gravity)
       gyroX,             gyroY,              gyroZ,             // units dps (degrees per second)
       gyroDriftX,        gyroDriftY,         gyroDriftZ,        // units dps
       gyroRoll,          gyroPitch,          gyroYaw,           // units degrees (expect major drift)
       gyroCorrectedRoll, gyroCorrectedPitch, gyroCorrectedYaw,  // units degrees (expect minor drift)
-      accRoll,           accPitch,           accYaw;            // units degrees (roll and pitch noisy, yaw not possible)
+      accRoll,           accPitch,           accYaw,            // units degrees (roll and pitch noisy, yaw not possible)
+      complementaryRoll, complementaryPitch, complementaryYaw;  // units degrees (excellent roll, pitch, yaw minor drift)
 
 long lastTime;
 long lastInterval;
