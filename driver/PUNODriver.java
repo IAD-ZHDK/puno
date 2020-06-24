@@ -61,6 +61,7 @@ public class PUNODriver {
         private static final byte tDigitalPin = 0x03;
         private static final byte tServo = 0x04;
         private static final byte tIMU = 0x05;
+        private static final byte tLED = 0x06;
 
         // operation
         private static final byte opRead = 0x01;
@@ -222,22 +223,12 @@ public class PUNODriver {
         return punoArduino.read(0);
     }
 
-    /*
-    public static int[] digitalRead(Integer... pins) {
-        return PUNOUtil.unboxIntArray(punoArduino.sendOscQueries(NS.digitalReadMulti, pins.length, -1, pins));
-    }
-     */
-
     public static int analogRead(int pin) {
         punoArduino.send(PUNOProtocol.tAnalogPin, PUNOProtocol.opRead, (byte)pin);
         return punoArduino.readInt(0);
     }
 
     /*
-    public static int[] analogRead(Integer... pins) {
-        return PUNOUtil.unboxIntArray(punoArduino.sendOscQueries(NS.analogReadMulti, pins.length, -1, pins));
-    }
-
     // imu
     // returns Acceleration x, y, z and Gyroscope x, y, z
     public static float[] imuReadRaw() {
@@ -248,12 +239,13 @@ public class PUNODriver {
     public static float[] imuRead() {
         return PUNOUtil.unboxFloatArray(punoArduino.sendOscQueries(NS.imuRPY, 3, -1000f));
     }
+     */
 
     // others
     public static void setLEDColor(int c) {
-        punoArduino.sendOsc(NS.ledColor, (int) sketch.red(c), (int) sketch.green(c), (int) sketch.blue(c));
+        punoArduino.send(PUNOProtocol.tLED, PUNOProtocol.opWrite,
+                (byte) sketch.red(c), (byte) sketch.green(c), (byte) sketch.blue(c));
     }
-    */
 
     // remote class handling two-way tcp connection
     public static class PUNOChannel {

@@ -6,6 +6,7 @@
 #define tDigitalPin 0x03
 #define tServo 0x04
 #define tIMU 0x05
+#define tLED 0x06
 
 // operation
 #define opRead 0x01
@@ -118,6 +119,15 @@ int parse(int size, char target, char op) {
     return 1;
   }
 
+  // set led color
+  if (target == tLED && op == opWrite) {
+#ifdef ENABLE_RGBLED
+    WiFiDrv::analogWrite(25, read(2));
+    WiFiDrv::analogWrite(26, read(3));
+    WiFiDrv::analogWrite(27, read(4));
+#endif
+    return 0;
+  }
 
   return 0;
 }
