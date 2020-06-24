@@ -81,14 +81,6 @@ void writeInt(int index, int value) {
   write(index + 1, value & 0xFF);
 }
 
-void writeFloat(int index, float value) {
-  byte *b = (byte *)&value;
-  sendBuffer[index] = b[0];
-  sendBuffer[index + 1] = b[1];
-  sendBuffer[index + 2] = b[2];
-  sendBuffer[index + 3] = b[3];
-}
-
 void write(int index, char value) {
   sendBuffer[index] = value;
 }
@@ -142,14 +134,6 @@ int parse(int size, char target, char op) {
     String cmd = String(receiveBuffer + 2);
     lss_sendRaw(cmd);
     return 0;
-  }
-
-  // imu
-  if (target == tIMU && op == opRead) {
-    writeFloat(0, complementaryRoll);
-    writeFloat(4, complementaryPitch);
-    writeFloat(8, complementaryYaw);
-    return 12;
   }
 
   return 0;

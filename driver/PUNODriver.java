@@ -12,8 +12,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -230,17 +228,18 @@ public class PUNODriver {
         return punoArduino.readInt(0);
     }
 
+    /*
+    // imu
+    // returns Acceleration x, y, z and Gyroscope x, y, z
+    public static float[] imuReadRaw() {
+        return PUNOUtil.unboxFloatArray(punoArduino.sendOscQueries(NS.imuRaw, 6, -1000f));
+    }
+
     // returns roll, pitch, yaw in degress (yaw is drifting because no magnet)
     public static float[] imuRead() {
-        punoArduino.send(PUNOProtocol.tIMU, PUNOProtocol.opRead);
-        ByteBuffer buffer = ByteBuffer.wrap(punoArduino.receiveBuffer).order(ByteOrder.LITTLE_ENDIAN);
-
-        float roll = buffer.getFloat();
-        float pitch = buffer.getFloat();
-        float yaw = buffer.getFloat();
-
-        return new float[] {roll, pitch, yaw};
+        return PUNOUtil.unboxFloatArray(punoArduino.sendOscQueries(NS.imuRPY, 3, -1000f));
     }
+     */
 
     // others
     public static void setLEDColor(int c) {
