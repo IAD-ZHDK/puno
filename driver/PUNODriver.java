@@ -5,8 +5,12 @@ import processing.core.PApplet;
 import oscP5.*;
 import netP5.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +54,19 @@ public class PUNODriver {
         private static final String wekOutput = "/wek/outputs";
     }
 
+    private static class PUNOProtocol {
+        // target
+        private static final byte tPinMode = 0x01;
+        private static final byte tAnalogPin = 0x02;
+        private static final byte tDigitalPin = 0x03;
+        private static final byte tServo = 0x04;
+        private static final byte tIMU = 0x05;
+
+        // operation
+        private static final byte opRead = 0x01;
+        private static final byte opWrite = 0x02;
+    }
+
     // defines from arduino.h
     public static int HIGH = 0x1;
     public static int LOW = 0x0;
@@ -75,7 +92,7 @@ public class PUNODriver {
 
     // channels
 
-    private static OscChannel oscArduino;
+    private static PUNOChannel punoArduino;
     private static OscChannel oscWekinator;
     private static PApplet sketch;
 
@@ -87,12 +104,8 @@ public class PUNODriver {
         ShutdownHandler handler = new ShutdownHandler();
     }
 
-    public static void connectArduino(int arduinoId) {
-        connectArduino("puno-" + arduinoId + ".local");
-    }
-
     public static void connectArduino(String address) {
-        oscArduino = new OscChannel(address, 9000, 8000, NS.answer, true);
+        punoArduino = new PUNOChannel(address, 8000);
     }
 
     public static void connectWekinator() {
@@ -107,28 +120,28 @@ public class PUNODriver {
     // wekinator
     public static class Wekinator {
         public static void send(float[] values) {
-            send(boxFloatArray(values));
+            send(PUNOUtil.boxFloatArray(values));
         }
 
         public static void send(Integer... values) {
-            send(boxFloatArray(values));
+            send(PUNOUtil.boxFloatArray(values));
         }
 
         public static void send(Float... values) {
-            oscWekinator.sendOsc(NS.wekInput, (Object[]) values);
+            oscWekinator.sendOsc(NS.wekInput, values);
         }
 
         public static float[] evaluate(int outputCount, float[] values) {
-            return evaluate(outputCount, boxFloatArray(values));
+            return evaluate(outputCount, PUNOUtil.boxFloatArray(values));
         }
 
         public static float[] evaluate(int outputCount, Integer... values) {
-            return evaluate(outputCount, boxFloatArray(values));
+            return evaluate(outputCount, PUNOUtil.boxFloatArray(values));
         }
 
         public static float[] evaluate(int outputCount, Float... values) {
             // check error here
-            return unboxFloatArray(oscWekinator.sendOscQueries(NS.wekInput, outputCount, -1000f, values));
+            return PUNOUtil.unboxFloatArray(oscWekinator.sendOscQueries(NS.wekInput, outputCount, -1000f, values));
         }
     }
 
@@ -186,84 +199,208 @@ public class PUNODriver {
         }
 
         public static void sendRaw(String command) {
-            oscArduino.sendOsc(NS.servoCommand, command);
+            punoArduino.send(PUNOProtocol.tServo, PUNOProtocol.opWrite, command);
         }
     }
 
     // pin
     public static void pinMode(int pin, int mode) {
-        oscArduino.sendOsc(NS.pinMode, pin, mode);
+        punoArduino.send(PUNOProtocol.tPinMode, PUNOProtocol.opWrite, (byte)pin, (byte)mode);
     }
 
     public static void analogWrite(int pin, int value) {
-        oscArduino.sendOsc(NS.analogWrite, pin, value);
+        punoArduino.send(PUNOProtocol.tAnalogPin, PUNOProtocol.opWrite, (byte)pin, (byte)value);
     }
 
     public static void digitalWrite(int pin, int value) {
-        oscArduino.sendOsc(NS.digitalWrite, pin, value);
+        punoArduino.send(PUNOProtocol.tDigitalPin, PUNOProtocol.opWrite, (byte)pin, (byte)value);
     }
 
     public static int digitalRead(int pin) {
-        return oscArduino.sendOscQuery(NS.digitalRead, -1, pin);
+        punoArduino.send(PUNOProtocol.tDigitalPin, PUNOProtocol.opRead, (byte)pin);
+        return punoArduino.read(0);
     }
 
+    /*
     public static int[] digitalRead(Integer... pins) {
-        return unboxIntArray(oscArduino.sendOscQueries(NS.digitalReadMulti, pins.length, -1, pins));
+        return PUNOUtil.unboxIntArray(punoArduino.sendOscQueries(NS.digitalReadMulti, pins.length, -1, pins));
     }
+     */
 
     public static int analogRead(int pin) {
-        return oscArduino.sendOscQuery(NS.analogRead, -1, pin);
+        punoArduino.send(PUNOProtocol.tAnalogPin, PUNOProtocol.opRead, (byte)pin);
+        return punoArduino.readInt(0);
     }
 
+    /*
     public static int[] analogRead(Integer... pins) {
-        return unboxIntArray(oscArduino.sendOscQueries(NS.analogReadMulti, pins.length, -1, pins));
+        return PUNOUtil.unboxIntArray(punoArduino.sendOscQueries(NS.analogReadMulti, pins.length, -1, pins));
     }
 
     // imu
     // returns Acceleration x, y, z and Gyroscope x, y, z
     public static float[] imuReadRaw() {
-        return unboxFloatArray(oscArduino.sendOscQueries(NS.imuRaw, 6, -1000f));
+        return PUNOUtil.unboxFloatArray(punoArduino.sendOscQueries(NS.imuRaw, 6, -1000f));
     }
 
     // returns roll, pitch, yaw in degress (yaw is drifting because no magnet)
     public static float[] imuRead() {
-        return unboxFloatArray(oscArduino.sendOscQueries(NS.imuRPY, 3, -1000f));
+        return PUNOUtil.unboxFloatArray(punoArduino.sendOscQueries(NS.imuRPY, 3, -1000f));
     }
 
     // others
     public static void setLEDColor(int c) {
-        oscArduino.sendOsc(NS.ledColor, (int) sketch.red(c), (int) sketch.green(c), (int) sketch.blue(c));
+        punoArduino.sendOsc(NS.ledColor, (int) sketch.red(c), (int) sketch.green(c), (int) sketch.blue(c));
     }
+    */
 
-    // test
-    public static int sendTest() {
-        return oscArduino.sendOscQuery(NS.test, -1);
-    }
+    // remote class handling two-way tcp connection
+    public static class PUNOChannel {
+        private final String address;
+        private final int port;
 
-    public static void sendTestRGB() {
-        oscArduino.sendOsc("/test/rgb", 1, 2, 3);
-    }
+        private Socket client;
+        private OutputStream out;
+        private InputStream in;
 
-    public static void sendTestW() {
-        oscArduino.sendOsc("/test/w", 7);
+        private byte[] receiveBuffer = new byte[256];
+        private byte[] sendBuffer = new byte[256];
+
+        public PUNOChannel(String address, int port) {
+            this.address = address;
+            this.port = port;
+        }
+
+        public void writeInt(int index, int value) {
+            sendBuffer[index] = (byte)(value >> 8 & 0xFF);
+            sendBuffer[index + 1] = (byte)(value & 0xFF);
+        }
+
+        public int readInt(int index) {
+            return ((receiveBuffer[index] & 0xFF) << 8)
+                    | receiveBuffer[index + 1] & 0xFF;
+        }
+
+        public byte read(int index) {
+            return receiveBuffer[index];
+        }
+
+        public void open() {
+            try {
+                client = new Socket(address, port);
+                out = client.getOutputStream();
+                in = client.getInputStream();
+            }
+            catch (IOException e) {
+                System.err.println("error open: " + e.getMessage());
+            }
+        }
+
+        public int send(byte target, byte operation, String msg) {
+            int size = 2 + 1 + msg.length();
+
+            // add header
+            sendBuffer[0] = target;
+            sendBuffer[1] = operation;
+            sendBuffer[2] = (byte)msg.length();
+
+            // fill payload
+            System.arraycopy(msg.getBytes(), 0, sendBuffer, 3, msg.length());
+
+            return sendRaw(sendBuffer, size);
+        }
+
+        public int send(byte target, byte operation, int...params) {
+            int size = 2 + (params.length * 2);
+
+            // add header
+            sendBuffer[0] = target;
+            sendBuffer[1] = operation;
+
+            // fill values
+            int ptr = 2;
+            for(int i = 0; i < params.length; i++) {
+                writeInt(ptr, params[i]);
+                ptr += 2;
+            }
+
+            return sendRaw(sendBuffer, size);
+        }
+
+        public int send(byte target, byte operation, byte...params) {
+            int size = 2 + params.length;
+
+            // add header
+            sendBuffer[0] = target;
+            sendBuffer[1] = operation;
+
+            // add payload
+            System.arraycopy(params, 0, sendBuffer, 2, params.length);
+
+            return sendRaw(sendBuffer, size);
+        }
+
+        public int sendRaw(byte[] packet) {
+            return sendRaw(packet, packet.length);
+        }
+
+        public int sendRaw(byte[] packet, int length) {
+            try {
+                out.write(packet, 0, length);
+
+                int size;
+                int waitCounter = 1;
+
+                // wait for response
+                do {
+                    size = in.available();
+                    Thread.sleep(1);
+
+                    if (waitCounter++ % 200 == 0) {
+                        out.write(packet);
+                        out.flush();
+                    }
+                } while (size <= 0);
+
+                // read buffer from stream
+                in.read(receiveBuffer, 0, size);
+                return size;
+            }
+            catch (IOException e) {
+                System.err.println("error sending: " + e.getMessage());
+            } catch (InterruptedException e) {
+                System.err.println("error waiting: " + e.getMessage());
+            }
+            return -1;
+        }
+
+        public void close() {
+            try {
+                System.out.println("Server is closing...");
+                client.close();
+            }
+            catch (IOException e) {
+                System.err.println("error closing: " + e.getMessage());
+            }
+        }
     }
 
     // remote class handling the two-way osc connection
     public static class OscChannel implements Runnable {
 
-        private NetAddress remoteAddress;
-        private OscP5 osc;
+        private final NetAddress remoteAddress;
+        private final OscP5 osc;
         private DatagramSocket outSocket;
 
         private final AtomicInteger queryIdCounter = new AtomicInteger(0);
-        private ConcurrentHashMap<Integer, Future> queries = new ConcurrentHashMap<Integer, Future>();
-        private Thread timeoutThread = new Thread(this);
+        private final ConcurrentHashMap<Integer, Future> queries = new ConcurrentHashMap<Integer, Future>();
+        private final Thread timeoutThread = new Thread(this);
         private volatile boolean running = true;
         private boolean useDelay = true;
-        private boolean exclusiveSocket = false;
+        private final boolean exclusiveSocket = false;
 
-        private boolean useMessageId;
-        private String answerNamespace;
+        private final boolean useMessageId;
+        private final String answerNamespace;
         private int msgCount = 0;
 
         OscChannel(String address, int inPort, int outPort, String answerNamespace, boolean useMessageId) {
@@ -354,7 +491,7 @@ public class PUNODriver {
         }
 
         private <T> T sendOscQuery(String address, T defaultValue, T... args) {
-            return (T) sendOscQueries(address, 1, defaultValue, args)[0];
+            return sendOscQueries(address, 1, defaultValue, args)[0];
         }
 
         private <T> T[] sendOscQueries(String address, int resultLength, T defaultValue, T... args) {
@@ -421,9 +558,9 @@ public class PUNODriver {
         }
 
         class Future {
-            private volatile Object[] values;
-            private Semaphore mutex = new Semaphore(0);
-            private long timestamp = System.currentTimeMillis();
+            private final Object[] values;
+            private final Semaphore mutex = new Semaphore(0);
+            private final long timestamp = System.currentTimeMillis();
             private volatile boolean finished = false;
 
             public Future(int resultCount, Object defaultValue) {
@@ -466,44 +603,46 @@ public class PUNODriver {
         }
     }
 
-    static int[] unboxIntArray(Object[] array) {
-        int[] result = new int[array.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = (int) array[i];
+    public static class PUNOUtil {
+        static int[] unboxIntArray(Object[] array) {
+            int[] result = new int[array.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = (int) array[i];
+            }
+            return result;
         }
-        return result;
-    }
 
-    static float[] unboxFloatArray(Object[] array) {
-        float[] result = new float[array.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = (float) array[i];
+        static float[] unboxFloatArray(Object[] array) {
+            float[] result = new float[array.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = (float) array[i];
+            }
+            return result;
         }
-        return result;
-    }
 
-    static Integer[] boxIntArray(int[] array) {
-        Integer[] result = new Integer[array.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = (Integer) array[i];
+        static Integer[] boxIntArray(int[] array) {
+            Integer[] result = new Integer[array.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = array[i];
+            }
+            return result;
         }
-        return result;
-    }
 
-    static Float[] boxFloatArray(float[] array) {
-        Float[] result = new Float[array.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = (Float) array[i];
+        static Float[] boxFloatArray(float[] array) {
+            Float[] result = new Float[array.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = array[i];
+            }
+            return result;
         }
-        return result;
-    }
 
-    static Float[] boxFloatArray(Integer[] array) {
-        Float[] result = new Float[array.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = (float) array[i];
+        static Float[] boxFloatArray(Integer[] array) {
+            Float[] result = new Float[array.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = (float) array[i];
+            }
+            return result;
         }
-        return result;
     }
 
     // clean shutdown
@@ -516,9 +655,9 @@ public class PUNODriver {
         public void run() {
             System.out.println("shutting down...");
 
-            if (oscArduino != null) {
+            if (punoArduino != null) {
                 Servo.halt(254);
-                oscArduino.stop();
+                punoArduino.close();
             }
 
             if (oscWekinator != null)
