@@ -8,22 +8,22 @@ void setup() {
   delay(500);
 
   Serial.println("-----------------");
-  Serial.println("PUNO Server");
+  Serial.println("PUNO Server TCP");
 
   setupIMU();
   setupServo();
   setupWiFi();
-  setupOSCBridge();
+  setupPUNO();
 #ifdef ENABLE_MDNS
   setupMDNS();
 #endif
 
-  Serial.println("setup has been done!");
+  Serial.println("Ready for connection!");
 }
 
 void loop() {
   updateIMU();
-  updateOSCBridge();
+  updatePUNO();
   wifiUpdate();
 
 #ifdef ENABLE_MDNS
