@@ -96,7 +96,17 @@ public class PUNODriver {
     private static OscChannel oscWekinator;
     private static PApplet sketch;
 
+    // utils
+    public static int mapi(int value, int startA, int endA, int startB, int endB) {
+        return Math.round(PApplet.map(value, startA, endA, startB, endB));
+    }
+
     // setup
+
+    /**
+     * Initialises the PUNO context.
+     * @param sketch The parent sketch of PUNO
+     */
     public static void setupPUNO(PApplet sketch) {
         System.out.println("setting up puno...");
         PUNODriver.sketch = sketch;
