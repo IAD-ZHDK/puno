@@ -26,8 +26,8 @@ The API is very similar to the default Arduino API. It is possible to read and w
 ### Digital & Analog Pins
 
 ### Servo
-- `Servo.changeId(int currentID, int newID)` -
-- `Servo.reset(int Id)` -
+- `Servo.changeId(int currentID, int newID)` - Seting the ID requires a reset of the motor. ID 254 can be used to broadcast to all attached motors
+- `Servo.reset(int Id)` - Reset a motor. Same effect can be achieved with turning on and off the motor. 
 
 - `Servo.move(int id, int angle)` - Move to a specific angle
 - `Servo.wheelRPM(int Id, int speed)` - Set the rotation speed (in rotations per minute)
@@ -38,12 +38,11 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `Servo.imuRead()` -
 
 ### Onboard Servo LED
-- `Servo.setColorLED(int id, int colorCode)` -
+- `Servo.setColorLED(int id, int colorCode)` - 0=Off (black); 1=Red 2=Green; 3=Blue; 4=Yellow; 5=Cyan; 6=Magenta; 7=White;
 - `Servo.setBlinkingLED(int id, int rate)` -
 
 ### Arduino LED
 - `Servo.setLEDColor(int c)` -
-
 ## Examples
 tbd
 
