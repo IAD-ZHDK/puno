@@ -24,7 +24,7 @@ void setup() {
     println("Could not find Arduino!");
     println("Available Devices: ");
     printArray(devices);
-    exit();
+    System.exit(0);
   }
 
   println("found ", deviceName);
@@ -52,10 +52,12 @@ String findOnWindows(String[] devices) {
   for (String device : devices) {
     println("checking ", device, "...");
     Serial serial = new Serial(this, device, baudRate);
-    delay(1000);
-    String input = serial.readString();
-    if (input != null && input.contains("PUNO")) {
-      found = device;
+    if (serial.active()) {
+      delay(1000);
+      String input = serial.readString();
+      if (input != null && input.contains("PUNO")) {
+        found = device;
+      }
     }
     serial.stop();
     if (found != null)
