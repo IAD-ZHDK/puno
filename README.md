@@ -26,10 +26,23 @@ The API is very similar to the default Arduino API. It is possible to read and w
 ### Digital & Analog Pins
 
 ### Servo
+- `Servo.changeId(int currentID, int newID)` -
+- `Servo.reset(int Id)` -
+
+- `Servo.move(int id, int angle)` - Move to a specific angle
+- `Servo.wheelRPM(int Id, int speed)` - Set the rotation speed (in rotations per minute)
+- `Servo.wheelDegree(int id, int speed)` - Set the rotation speed (in degrees per second)
+- `Servo.moveRelative(int id, int angle)` - Move to an angle relativew to the the current wheel position 
 
 ### IMU
+- `Servo.imuRead()` -
 
-### Onboard LED
+### Onboard Servo LED
+- `Servo.setColorLED(int id, int colorCode)` -
+- `Servo.setBlinkingLED(int id, int rate)` -
+
+### Arduino LED
+- `Servo.setLEDColor(int c)` -
 
 ## Examples
 tbd
