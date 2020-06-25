@@ -32,7 +32,7 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `Servo.move(int id, int angle)` - Move to a specific angle
 - `Servo.wheelRPM(int Id, int speed)` - Set the rotation speed (in rotations per minute)
 - `Servo.wheelDegree(int id, int speed)` - Set the rotation speed (in degrees per second)
-- `Servo.moveRelative(int id, int angle)` - Move to an angle relativew to the the current wheel position 
+- `Servo.moveRelative(int id, int angle)` - Move to an angle relative to the the current wheel position 
 
 ### IMU
 - `Servo.imuRead()` -
