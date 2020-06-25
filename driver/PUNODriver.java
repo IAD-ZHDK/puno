@@ -97,6 +97,11 @@ public class PUNODriver {
     private static PApplet sketch;
 
     // setup
+
+    /**
+     * Initialises the PUNO context.
+     * @param sketch The parent sketch of PUNO
+     */
     public static void setupPUNO(PApplet sketch) {
         System.out.println("setting up puno...");
         PUNODriver.sketch = sketch;
