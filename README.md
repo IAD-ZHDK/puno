@@ -1,7 +1,7 @@
 # PUNO
 PUNO (Processing-Arduino) is a framework to program microcontrollers from within Processing.
 
-![](images/puno-programming.svg)
+![](documentation/puno-programming.svg)
 
 ## Setup
 
