@@ -31,3 +31,4 @@ float complementaryRoll, complementaryPitch, complementaryYaw;  // units degrees
 
 // global methods
 void setLED(int red, int green, int blue);
+void(* resetFunc) (void) = 0;

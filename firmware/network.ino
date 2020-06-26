@@ -5,7 +5,7 @@ void setupWiFi() {
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
-    // don't continue
+    setLED(INFO_LED_BRIGHTNESS, 0, 0);
     while (true);
   }
 
@@ -42,17 +42,15 @@ void printWifiData() {
 }
 
 void wifiUpdate() {
-  if (status != WL_CONNECTED) {
-    Serial.println("lost wifi connection, trying to reconnect...");
-    WiFi.end();
-
+  // Checks if Wifi signal lost
+  if (WiFi.RSSI() == 0)
+  {
+    // show to the user
     setLED(20, 0, 0);
+    delay(1000);
 
-    setupWiFi();
-
-#ifdef ENABLE_MDNS
-    setupMDNS();
-#endif
+    // reset arduino
+    resetFunc();
   }
 }
 

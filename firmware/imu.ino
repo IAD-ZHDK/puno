@@ -13,6 +13,7 @@ void setupIMU() {
 
   if (!IMU.begin()) {
     Serial.println("Failed to initialize IMU!");
+    setLED(INFO_LED_BRIGHTNESS, 0, 0);
     while (1);
   }
 
