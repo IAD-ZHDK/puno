@@ -19,7 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class PUNODriver {
     // query timeout
-    private static final int TIME_OUT = 500;
+    private static final int TIME_OUT = 1000;
+
+    // TCP Command timeout
+    private static final int CMD_TIMEOUT = 2500;
 
     // mc send delay
     private static final int SEND_DELAY = 5;
@@ -90,6 +93,13 @@ public class PUNODriver {
 
     public static int LED_BUILTIN = 25;
 
+    public static int A0 = 0;
+    public static int A1 = 1;
+    public static int A2 = 2;
+    public static int A3 = 3;
+    public static int A4 = 4;
+    public static int A5 = 5;
+
     // channels
 
     private static PUNOChannel punoArduino;
@@ -108,17 +118,19 @@ public class PUNODriver {
      * @param sketch The parent sketch of PUNO
      */
     public static void setupPUNO(PApplet sketch) {
-        System.out.println("setting up puno...");
+        System.out.print("setting up puno...");
         PUNODriver.sketch = sketch;
         sketch.frameRate(20);
 
         ShutdownHandler handler = new ShutdownHandler();
+        System.out.println("done!");
     }
 
     public static void connectArduino(String address) {
-        System.out.println("trying to connect to " + address + "...");
+        System.out.print("trying to connect to " + address + "...");
         punoArduino = new PUNOChannel(address, 8000);
         punoArduino.open();
+        System.out.println("connected!");
     }
 
     public static void connectWekinator() {
@@ -126,8 +138,10 @@ public class PUNODriver {
     }
 
     public static void connectWekinator(String address, int inPort, int outPort) {
+        System.out.print("trying to connect to wekinator...");
         oscWekinator = new OscChannel(address, inPort, outPort, NS.wekOutput, false);
         oscWekinator.useDelay = false;
+        System.out.println("done!");
     }
 
     // wekinator
@@ -342,8 +356,9 @@ public class PUNODriver {
                 out = client.getOutputStream();
                 in = client.getInputStream();
             } catch (IOException e) {
+                System.out.println();
                 System.err.println("Connection Error: " + e.getMessage());
-                System.exit(1);
+                System.exit(0);
             }
         }
 
@@ -412,7 +427,7 @@ public class PUNODriver {
                     size = in.available();
                     Thread.sleep(1);
 
-                    if (waitCounter++ % 200 == 0) {
+                    if (waitCounter++ % CMD_TIMEOUT == 0) {
                         out.write(packet);
                         out.flush();
                     }
