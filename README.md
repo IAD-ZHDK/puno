@@ -39,8 +39,9 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `Servo.wheelDegree(int id, int speed)` - Set the rotation speed (in degrees per second)
 - `Servo.moveRelative(int id, int angle)` - Move to an angle relative to the the current wheel position 
 
-### IMU
-- `IMU.read()`
+### IMU 
+More about rotation axes (https://en.wikipedia.org/wiki/Aircraft_principal_axes)
+- `IMU.read()` 
 - `IMU.roll`
 - `IMU.pitch`
 - `IMU.yaw`
