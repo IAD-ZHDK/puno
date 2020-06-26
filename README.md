@@ -37,7 +37,19 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `Servo.move(int id, int angle)` - Move to a specific angle
 - `Servo.wheelRPM(int Id, int speed)` - Set the rotation speed (in rotations per minute)
 - `Servo.wheelDegree(int id, int speed)` - Set the rotation speed (in degrees per second)
-- `Servo.moveRelative(int id, int angle)` - Move to an angle relative to the the current wheel position 
+- `Servo.moveRelative(int id, int angle)` - Move to an angle relative to the the current wheel position
+
+#### Change ID Example
+
+First set the id and then reset the motor.
+
+```java
+// set the id
+Servo.changeId(254, 0);
+
+// reset motor to store value
+Servo.reset(254);
+```
 
 ### IMU 
 More about rotation axes (https://en.wikipedia.org/wiki/Aircraft_principal_axes)
@@ -60,7 +72,7 @@ More about rotation axes (https://en.wikipedia.org/wiki/Aircraft_principal_axes)
 - `Servo.setBlinkingLED(int id, int rate)` -
 
 ### Arduino LED
-- `setLEDColor(color c)` -
+- `setLEDColor(color c)` - 
 
 ## About
 Developed by Florian Bruggisser & Luke Franzke ZHdK 2020
