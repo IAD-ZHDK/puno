@@ -25,6 +25,11 @@ The API is very similar to the default Arduino API. It is possible to read and w
 
 ### Digital & Analog Pins
 
+- `digitalWrite(int pin, int value)`
+- `analogWrite(int, pin, int value)`
+- `int digitalRead(int pin)`
+- `int anaogRead(int pin)`
+
 ### Servo
 - `Servo.changeId(int currentID, int newID)` - Seting the ID requires a reset of the motor. ID 254 can be used to broadcast to all attached motors
 - `Servo.reset(int Id)` - Reset a motor. Same effect can be achieved with turning on and off the motor. 
@@ -35,16 +40,26 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `Servo.moveRelative(int id, int angle)` - Move to an angle relative to the the current wheel position 
 
 ### IMU
-- `Servo.imuRead()` -
+- `IMU.read()` -
+- `IMU.roll`
+- `IMU.pitch`
+- `IMU.yaw`
+
+### Wekinator
+- `Wekinator.train(int... values)`
+- `Wekinator.predict(int outputCount, int... values)`
+- `Wekinator.output0`
+- `Wekinator.output1`
+- `Wekinator.output2`
+- `Wekinator.output3`
+- `Wekinator.output4`
 
 ### Onboard Servo LED
 - `Servo.setColorLED(int id, int colorCode)` - 0=Off (black); 1=Red 2=Green; 3=Blue; 4=Yellow; 5=Cyan; 6=Magenta; 7=White;
 - `Servo.setBlinkingLED(int id, int rate)` -
 
 ### Arduino LED
-- `Servo.setLEDColor(int c)` -
-## Examples
-tbd
+- `setLEDColor(color c)` -
 
 ## About
 Developed by Florian Bruggisser & Luke Franzke ZHdK 2020
