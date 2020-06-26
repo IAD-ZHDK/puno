@@ -97,7 +97,7 @@ public class PUNODriver {
     private static PApplet sketch;
 
     // utils
-    public static int mapi(int value, int startA, int endA, int startB, int endB) {
+    public static int map(int value, int startA, int endA, int startB, int endB) {
         return Math.round(PApplet.map(value, startA, endA, startB, endB));
     }
 
@@ -132,15 +132,48 @@ public class PUNODriver {
 
     // wekinator
     public static class Wekinator {
-        public static void send(float[] values) {
-            send(PUNOUtil.boxFloatArray(values));
+        public static float result1;
+        public static float result2;
+        public static float result3;
+        public static float result4;
+        public static float result5;
+
+        public static void predict(int outputCount, float[] values) {
+            predict(outputCount, PUNOUtil.boxFloatArray(values));
         }
 
-        public static void send(Integer... values) {
-            send(PUNOUtil.boxFloatArray(values));
+        public static void predict(int outputCount, Integer... values) {
+            predict(outputCount, PUNOUtil.boxFloatArray(values));
         }
 
-        public static void send(Float... values) {
+        public static void predict(int outputCount, Float... values) {
+            float[] results = evaluate(outputCount, values);
+
+            if(results.length > 0)
+                result1 = results[0];
+
+            if(results.length > 1)
+                result2 = results[1];
+
+            if(results.length > 2)
+                result3 = results[2];
+
+            if(results.length > 3)
+                result4 = results[3];
+
+            if(results.length > 4)
+                result5 = results[4];
+        }
+
+        public static void train(float[] values) {
+            train(PUNOUtil.boxFloatArray(values));
+        }
+
+        public static void train(Integer... values) {
+            train(PUNOUtil.boxFloatArray(values));
+        }
+
+        public static void train(Float... values) {
             oscWekinator.sendOsc(NS.wekInput, values);
         }
 
@@ -213,6 +246,21 @@ public class PUNODriver {
 
         public static void sendRaw(String command) {
             punoArduino.send(PUNOProtocol.tServo, PUNOProtocol.opWrite, command + "\0");
+        }
+    }
+
+    // imu
+    public static class IMU {
+        // vars
+        public static float roll;
+        public static float pitch;
+        public static float yaw;
+
+        public static void read() {
+            float[] values = imuRead();
+            roll = values[0];
+            pitch = values[1];
+            yaw = values[2];
         }
     }
 
