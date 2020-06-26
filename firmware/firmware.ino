@@ -7,8 +7,10 @@ void setup() {
   Serial.begin(9600);
   delay(500);
 
-  Serial.println("---------------");
-  Serial.println("PUNO Server TCP");
+  setLED(INFO_LED_BRIGHTNESS / 2, INFO_LED_BRIGHTNESS / 2, 0);
+
+  Serial.println("-------------------");
+  Serial.println("PUNO Server TCP 1.1");
 
   setupIMU();
   setupServo();

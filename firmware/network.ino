@@ -28,6 +28,7 @@ void setupWiFi() {
 
   // once you are connected :
   Serial.println("Connected!");
+  setLED(0, 0, INFO_LED_BRIGHTNESS);
   printWifiData();
 }
 
@@ -43,8 +44,9 @@ void printWifiData() {
 void wifiUpdate() {
   if (status != WL_CONNECTED) {
     Serial.println("lost wifi connection, trying to reconnect...");
-
     WiFi.end();
+
+    setLED(20, 0, 0);
 
     setupWiFi();
 
@@ -52,4 +54,13 @@ void wifiUpdate() {
     setupMDNS();
 #endif
   }
+}
+
+void setLED(int red, int green, int blue) {
+  // turn rgb-led red
+#ifdef ENABLE_RGBLED
+  WiFiDrv::analogWrite(25, red);
+  WiFiDrv::analogWrite(26, green);
+  WiFiDrv::analogWrite(27, blue);
+#endif
 }

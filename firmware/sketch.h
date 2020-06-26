@@ -11,6 +11,8 @@
 #include <utility/wifi_drv.h>
 #endif
 
+#define INFO_LED_BRIGHTNESS 20
+
 #include "secrets.h"
 
 // mdns
@@ -26,3 +28,6 @@
 
 // global vars
 float complementaryRoll, complementaryPitch, complementaryYaw;  // units degrees (excellent roll, pitch, yaw minor drift)
+
+// global methods
+void setLED(int red, int green, int blue);

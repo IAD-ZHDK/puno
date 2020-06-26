@@ -13,29 +13,52 @@
 #define opWrite 0x02
 
 WiFiServer server(PORT);
+WiFiClient client;
 
 boolean alreadyConnected = false;
 
 char receiveBuffer[256];
 char sendBuffer[256];
 
+int inputSize = 0;
+
 void setupPUNO() {
   server.begin();
 }
 
 void updatePUNO() {
-  WiFiClient client = server.available();
+  // try to connect client
+  if (!alreadyConnected) {
+    client = server.available();
+  }
 
+  // handle connection
   if (client) {
+
+    // check first time connect
     if (!alreadyConnected) {
       client.flush();
-      Serial.println("client connected");
       alreadyConnected = true;
+      setLED(0, INFO_LED_BRIGHTNESS, 0);
+      Serial.print("client ");
+      Serial.print(client.remoteIP());
+      Serial.println(" connected");
     }
 
-    int size = client.available();
-    if (size > 0) {
-      for (int i = 0; i < size; i++) {
+    // check disconnect
+    if (!client.connected() && alreadyConnected) {
+      alreadyConnected = false;
+      Serial.println("client disconnected");
+
+      // send servo halt
+      lss_halt_all();
+      setLED(0, 0, INFO_LED_BRIGHTNESS);
+      return;
+    }
+
+    inputSize = client.available();
+    if (inputSize > 0) {
+      for (int i = 0; i < inputSize; i++) {
         receiveBuffer[i] = client.read();
       }
 
@@ -43,20 +66,18 @@ void updatePUNO() {
       char target = read(0);
       char op = read(1);
 
-      int returnSize = parse(size, target, op);
+      int returninputSize = parse(inputSize, target, op);
 
       // check if no return, then send a 1 back
-      if (returnSize == 0) {
-        returnSize = 1;
+      if (returninputSize == 0) {
+        returninputSize = 1;
         write(0, 1);
       }
 
-      client.write(sendBuffer, returnSize);
+      client.write(sendBuffer, returninputSize);
       client.flush();
     }
   }
-
-  delay(5);
 }
 
 int read(int index) {
@@ -84,7 +105,7 @@ void write(int index, char value) {
   sendBuffer[index] = value;
 }
 
-int parse(int size, char target, char op) {
+int parse(int inputSize, char target, char op) {
 
   // set pin mode
   if (target == tPinMode && op == opWrite) {
@@ -120,11 +141,7 @@ int parse(int size, char target, char op) {
 
   // set led color
   if (target == tLED && op == opWrite) {
-#ifdef ENABLE_RGBLED
-    WiFiDrv::analogWrite(25, read(2));
-    WiFiDrv::analogWrite(26, read(3));
-    WiFiDrv::analogWrite(27, read(4));
-#endif
+    setLED(read(2), read(3), read(4));
     return 0;
   }
 
@@ -143,5 +160,13 @@ int parse(int size, char target, char op) {
     return 12;
   }
 
+  Serial.print("nop ");
+  Serial.println(inputSize);
+
+  for (int i = 0; i < inputSize; i++) {
+    Serial.print(receiveBuffer[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
   return 0;
 }

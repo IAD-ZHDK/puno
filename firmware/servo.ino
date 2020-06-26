@@ -17,6 +17,10 @@ void lss_reset(int id) {
   lss_sendRaw(String("#") + id + String("RESET"));
 }
 
+void lss_halt_all() {
+  lss_sendRaw("#254H");
+}
+
 void lss_sendRaw(String command) {
   servoSerial.print(command + "\r");
 }
