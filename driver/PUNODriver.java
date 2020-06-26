@@ -5,9 +5,7 @@ import processing.core.PApplet;
 import oscP5.*;
 import netP5.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -18,14 +16,17 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PUNODriver {
+    // debug mode
+    private static final boolean TRACE = true;
+
     // query timeout
-    private static final int TIME_OUT = 1000;
+    public static final int QUERY_TIMEOUT = 1000;
 
     // TCP Command timeout
-    private static final int CMD_TIMEOUT = 2500;
+    public static final int CMD_TIMEOUT = 2500;
 
     // mc send delay
-    private static final int SEND_DELAY = 5;
+    public static int SEND_DELAY = 5;
 
     private static class NS {
         // arduino
@@ -118,11 +119,32 @@ public class PUNODriver {
      * @param sketch The parent sketch of PUNO
      */
     public static void setupPUNO(PApplet sketch) {
+        setupPUNO(sketch, false);
+    }
+
+    public static void setupPUNO(PApplet sketch, boolean trace) {
         System.out.print("setting up puno...");
         PUNODriver.sketch = sketch;
         sketch.frameRate(20);
 
-        ShutdownHandler handler = new ShutdownHandler();
+        // make clean shutdown
+        Thread shutdownThread = new Thread(() -> {
+            System.out.println("shutting down...");
+
+            if (punoArduino != null && punoArduino.isOpen()) {
+                punoArduino.close();
+            }
+
+            if (oscWekinator != null)
+                oscWekinator.stop();
+
+            System.out.println("finished!");
+            sketch.exit();
+        });
+        shutdownThread.setDaemon(true);
+        // todo: application keeps hanging!
+        // Runtime.getRuntime().addShutdownHook(shutdownThread);
+
         System.out.println("done!");
     }
 
@@ -352,9 +374,11 @@ public class PUNODriver {
         public void open() {
             try {
                 client = new Socket();
+                client.setTcpNoDelay(true);
                 client.connect(new InetSocketAddress(address, port), 5000);
-                out = client.getOutputStream();
-                in = client.getInputStream();
+
+                out = new BufferedOutputStream(client.getOutputStream());
+                in = new BufferedInputStream((client.getInputStream()));
             } catch (IOException e) {
                 System.out.println();
                 System.err.println("Connection Error: " + e.getMessage());
@@ -416,6 +440,7 @@ public class PUNODriver {
         public int sendRaw(byte[] packet, int length) {
             try {
                 out.write(packet, 0, length);
+                out.flush();
 
                 int size;
                 int waitCounter = 1;
@@ -428,6 +453,7 @@ public class PUNODriver {
                     Thread.sleep(1);
 
                     if (waitCounter++ % CMD_TIMEOUT == 0) {
+                        trace("CMD TIMEOUT", String.valueOf(waitCounter));
                         out.write(packet);
                         out.flush();
                     }
@@ -446,7 +472,9 @@ public class PUNODriver {
 
         public void close() {
             try {
-                System.out.println("Server is closing...");
+                System.out.println("PUNO client is closing...");
+                in.close();
+                out.close();
                 client.close();
             } catch (IOException e) {
                 System.err.println("error closing: " + e.getMessage());
@@ -546,8 +574,8 @@ public class PUNODriver {
                     Object[] args = msg.arguments();
 
                     if (args.length - parameterPtr < future.values.length) {
-                        System.out.println("Error: too few arguments in osc answer");
-                        System.out.println(msg);
+                        System.err.println("Error: too few arguments in osc answer");
+                        System.err.println(msg);
                     }
 
                     for (int i = 0; i < future.get().length; i++) {
@@ -661,7 +689,7 @@ public class PUNODriver {
             }
 
             synchronized void checkTimeout() {
-                if (System.currentTimeMillis() - timestamp < TIME_OUT) return;
+                if (System.currentTimeMillis() - timestamp < QUERY_TIMEOUT) return;
 
                 System.out.println("package timed out!");
 
@@ -714,25 +742,14 @@ public class PUNODriver {
         }
     }
 
-    // clean shutdown
-    static class ShutdownHandler implements Runnable {
+    // trace methods
+    private static void trace(String... msgs) {
+        if(!TRACE) return;
+        trace(String.join(" ", msgs));
+    }
 
-        public ShutdownHandler() {
-            Runtime.getRuntime().addShutdownHook(new Thread(this));
-        }
-
-        public void run() {
-            System.out.println("shutting down...");
-
-            if (punoArduino != null && punoArduino.isOpen()) {
-                Servo.halt(254);
-                punoArduino.close();
-            }
-
-            if (oscWekinator != null)
-                oscWekinator.stop();
-
-            System.out.println("done!");
-        }
+    private static void trace(String msg) {
+        if(!TRACE) return;
+        System.out.println(msg);
     }
 }
