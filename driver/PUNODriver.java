@@ -445,7 +445,7 @@ public class PUNODriver {
                 int size;
                 int waitCounter = 1;
 
-                sketch.delay(SEND_DELAY);
+                Thread.sleep(SEND_DELAY);
 
                 // wait for response
                 do {
