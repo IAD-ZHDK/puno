@@ -25,10 +25,10 @@ The API is very similar to the default Arduino API. It is possible to read and w
 
 ### Digital & Analog Pins
 
-- `digitalWrite(int pin, int value)`
-- `analogWrite(int, pin, int value)`
-- `int digitalRead(int pin)`
-- `int anaogRead(int pin)`
+- `digitalWrite(int pin, int value)` - set a pin to either on(1) or off(0) 
+- `analogWrite(int, pin, int value)` - write a PWM value to a pin (0-255)
+- `int digitalRead(int pin)`- read the digital value from a pin (0 or 1)
+- `int anaogRead(int pin)`- read the analog value from a pin (0 to 1023)
 
 ### Servo
 - `Servo.changeId(int currentID, int newID)` - Seting the ID requires a reset of the motor. ID 254 can be used to broadcast to all attached motors
@@ -39,8 +39,9 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `Servo.wheelDegree(int id, int speed)` - Set the rotation speed (in degrees per second)
 - `Servo.moveRelative(int id, int angle)` - Move to an angle relative to the the current wheel position 
 
-### IMU
-- `IMU.read()` -
+### IMU 
+More about rotation axes (https://en.wikipedia.org/wiki/Aircraft_principal_axes)
+- `IMU.read()` 
 - `IMU.roll`
 - `IMU.pitch`
 - `IMU.yaw`
