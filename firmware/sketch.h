@@ -1,6 +1,7 @@
 // settings
 //#define ENABLE_MDNS
 #define ENABLE_RGBLED
+//#define ENABLE_WATCHDOG
 
 // network
 #include <SPI.h>
@@ -9,6 +10,11 @@
 
 #ifdef ENABLE_RGBLED
 #include <utility/wifi_drv.h>
+#endif
+
+#ifdef ENABLE_WATCHDOG
+#include <avr/wdt.h>
+#define WDTO_8S   9
 #endif
 
 #define INFO_LED_BRIGHTNESS 20

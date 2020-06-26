@@ -20,6 +20,10 @@ void setup() {
   setupMDNS();
 #endif
 
+#ifdef ENABLE_WATCHDOG
+  wdt_enable(WDTO_8S);
+#endif
+
   Serial.println("Ready for connection!");
 }
 
@@ -30,5 +34,9 @@ void loop() {
 
 #ifdef ENABLE_MDNS
   updateMDNS();
+#endif
+
+#ifdef ENABLE_WATCHDOG
+  wdt_reset();
 #endif
 }
