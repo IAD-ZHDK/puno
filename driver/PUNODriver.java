@@ -146,11 +146,11 @@ public class PUNODriver {
 
     // wekinator
     public static class Wekinator {
-        public static float output0;
         public static float output1;
         public static float output2;
         public static float output3;
         public static float output4;
+        public static float output5;
 
         public static void predict(int outputCount, float[] values) {
             predict(outputCount, PUNOUtil.boxFloatArray(values));
@@ -164,19 +164,19 @@ public class PUNODriver {
             float[] results = evaluate(outputCount, values);
 
             if(results.length > 0)
-                output0 = results[0];
+                output1 = results[0];
 
             if(results.length > 1)
-                output1 = results[1];
+                output2 = results[1];
 
             if(results.length > 2)
-                output2 = results[2];
+                output3 = results[2];
 
             if(results.length > 3)
-                output3 = results[3];
+                output4 = results[3];
 
             if(results.length > 4)
-                output4 = results[4];
+                output5 = results[4];
         }
 
         public static void train(float[] values) {

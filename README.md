@@ -1,6 +1,8 @@
 # PUNO
 PUNO (Processing-Arduino) is a framework to program microcontrollers from within Processing.
 
+![](images/puno-programming.svg)
+
 ## Setup
 
 ### Install the Firmware
@@ -21,7 +23,6 @@ The API is very similar to the default Arduino API. It is possible to read and w
 
 - `setupPUNO(PApplet sketch)` - Initialises the PUNO driver. This method has to be called in `setup()`, before any other method.
 - `connectArduino(String address)` - Connects to a network Arduino device. The address is the [IP address](#find-the-address) of the device.
-- `connectWekinator()` - Connects PUNO to directly to a local instance of Wekinator. This instance should use the default ports.
 
 ### Digital & Analog Pins
 
@@ -53,19 +54,35 @@ Servo.reset(254);
 
 ### IMU 
 More about rotation axes (https://en.wikipedia.org/wiki/Aircraft_principal_axes)
-- `IMU.read()` 
-- `IMU.roll`
-- `IMU.pitch`
-- `IMU.yaw`
+
+- `IMU.read()` - Read in all the three rotation axes.
+- `IMU.roll` - Roll value of the IMU
+- `IMU.pitch` -  Pitch value of the IMU
+- `IMU.yaw` - Yaw value of the IMU
 
 ### Wekinator
-- `Wekinator.train(int... values)`
-- `Wekinator.predict(int outputCount, int... values)`
-- `Wekinator.output0`
-- `Wekinator.output1`
-- `Wekinator.output2`
-- `Wekinator.output3`
-- `Wekinator.output4`
+
+- `connectWekinator()` - Connects PUNO to directly to a local instance of Wekinator. This instance should use the default ports.
+- Data Input (Training / Prediction Phase)
+	- `Wekinator.train(int... values)`
+	- `Wekinator.predict(int outputCount, int... values)`
+- Outputs
+	- `Wekinator.output1`
+	- `Wekinator.output2`
+	- `Wekinator.output3`
+	- `Wekinator.output4`
+	- `Wekinator.output5`
+
+#### Example
+
+```java
+// read outputs
+Wekinator.predict(20, 30, 20);
+
+// print outputs
+println(Wekinator.output0);
+println(Wekinator.output1);
+```
 
 ### Onboard Servo LED
 - `Servo.setColorLED(int id, int colorCode)` - 0=Off (black); 1=Red 2=Green; 3=Blue; 4=Yellow; 5=Cyan; 6=Magenta; 7=White;
