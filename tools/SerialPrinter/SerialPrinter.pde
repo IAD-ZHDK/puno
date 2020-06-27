@@ -50,18 +50,26 @@ String findOnUnix(String[] devices) {
 String findOnWindows(String[] devices) {
   String found = null;
   for (String device : devices) {
-    println("checking ", device, "...");
-    Serial serial = new Serial(this, device, baudRate);
-    if (serial.active()) {
-      delay(1000);
-      String input = serial.readString();
-      if (input != null && input.contains("PUNO")) {
-        found = device;
+    print("checking ", device, "...");
+    try { 
+      Serial serial = new Serial(this, device, baudRate);
+      if (serial.active()) {
+        delay(1000);
+        String input = serial.readString();
+        if (input != null && input.contains("PUNO")) {
+          found = device;
+        }
       }
+      serial.stop();
+      println("no!");
+    } 
+    catch (Exception ex) {
+      println(" could not open!");
     }
-    serial.stop();
-    if (found != null)
+    if (found != null) {
+      println(" found!");
       return found;
+    }
   }
   return null;
 }
