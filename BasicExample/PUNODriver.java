@@ -238,6 +238,14 @@ public class PUNODriver {
             sendRaw("#" + id + "D" + angle);
         }
 
+        public static void move(int id, int angle, int speed) {
+            sendRaw("#" + id + "D" + angle + "SD" + speed);
+        }
+
+        public static void moveTimed(int id, int angle, int milliseconds) {
+            sendRaw("#" + id + "D" + angle + "T" + milliseconds);
+        }
+
         public static void moveRelative(int id, int angle) {
             sendRaw("#" + id + "MD" + angle);
         }
@@ -252,6 +260,10 @@ public class PUNODriver {
 
         public static void halt(int id) {
             sendRaw("#" + id + "H");
+        }
+
+        public static void limp(int id) {
+            sendRaw("#" + id + "L");
         }
 
         // settings

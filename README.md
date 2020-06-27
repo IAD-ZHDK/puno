@@ -36,9 +36,13 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `Servo.reset(int Id)` - Reset a motor. Same effect can be achieved with turning on and off the motor. 
 
 - `Servo.move(int id, int angle)` - Move to a specific angle
+- `Servo.move(int id, int angle, int speed)` - Move to a spcific angle in degree with the given speed
+- `Servo.moveTimed(int id, int angle, int time)` - Move to a spcific angle in degree in the given time (milliseconds)
 - `Servo.wheelRPM(int Id, int speed)` - Set the rotation speed (in rotations per minute)
 - `Servo.wheelDegree(int id, int speed)` - Set the rotation speed (in degrees per second)
 - `Servo.moveRelative(int id, int angle)` - Move to an angle relative to the the current wheel position
+- `Servo.halt(int id)` - Stop the servo from moving but keeps holding power
+- `Servo.limp(int id)` - Stop the servo from moving and does not power the motor anymore
 
 #### Change ID Example
 
