@@ -20,8 +20,6 @@ boolean alreadyConnected = false;
 char receiveBuffer[256];
 char sendBuffer[256];
 
-int inputSize = 0;
-
 void setupPUNO() {
   server.begin();
 }
@@ -56,7 +54,7 @@ void updatePUNO() {
       return;
     }
 
-    inputSize = client.available();
+    int inputSize = client.available();
     if (inputSize > 0) {
       for (int i = 0; i < inputSize; i++) {
         receiveBuffer[i] = client.read();
@@ -75,9 +73,10 @@ void updatePUNO() {
       }
 
       client.write(sendBuffer, returninputSize);
-      client.flush();
     }
   }
+
+  delay(5);
 }
 
 int read(int index) {
@@ -160,13 +159,9 @@ int parse(int inputSize, char target, char op) {
     return 12;
   }
 
-  Serial.print("nop ");
+  // debug info
+  Serial.print("NOP: ");
   Serial.println(inputSize);
 
-  for (int i = 0; i < inputSize; i++) {
-    Serial.print(receiveBuffer[i], HEX);
-    Serial.print(" ");
-  }
-  Serial.println();
   return 0;
 }

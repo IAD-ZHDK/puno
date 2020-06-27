@@ -116,6 +116,7 @@ public class PUNODriver {
 
     /**
      * Initialises the PUNO context.
+     *
      * @param sketch The parent sketch of PUNO
      */
     public static void setupPUNO(PApplet sketch) {
@@ -128,6 +129,7 @@ public class PUNODriver {
         sketch.frameRate(20);
 
         // make clean shutdown
+        /*
         Thread shutdownThread = new Thread(() -> {
             System.out.println("shutting down...");
 
@@ -142,6 +144,7 @@ public class PUNODriver {
             sketch.exit();
         });
         shutdownThread.setDaemon(true);
+         */
         // todo: application keeps hanging!
         // Runtime.getRuntime().addShutdownHook(shutdownThread);
 
@@ -185,19 +188,19 @@ public class PUNODriver {
         public static void predict(int outputCount, Float... values) {
             float[] results = evaluate(outputCount, values);
 
-            if(results.length > 0)
+            if (results.length > 0)
                 output1 = results[0];
 
-            if(results.length > 1)
+            if (results.length > 1)
                 output2 = results[1];
 
-            if(results.length > 2)
+            if (results.length > 2)
                 output3 = results[2];
 
-            if(results.length > 3)
+            if (results.length > 3)
                 output4 = results[3];
 
-            if(results.length > 4)
+            if (results.length > 4)
                 output5 = results[4];
         }
 
@@ -744,12 +747,12 @@ public class PUNODriver {
 
     // trace methods
     private static void trace(String... msgs) {
-        if(!TRACE) return;
+        if (!TRACE) return;
         trace(String.join(" ", msgs));
     }
 
     private static void trace(String msg) {
-        if(!TRACE) return;
+        if (!TRACE) return;
         System.out.println(msg);
     }
 }

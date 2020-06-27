@@ -17,7 +17,7 @@
 #define WDTO_8S   9
 #endif
 
-#define INFO_LED_BRIGHTNESS 20
+#define INFO_LED_BRIGHTNESS 250
 
 #include "secrets.h"
 
