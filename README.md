@@ -29,7 +29,7 @@ The API is very similar to the default Arduino API. It is possible to read and w
 - `digitalWrite(int pin, int value)` - set a pin to either on(1) or off(0) 
 - `analogWrite(int, pin, int value)` - write a PWM value to a pin (0-255)
 - `int digitalRead(int pin)`- read the digital value from a pin (0 or 1)
-- `int anaogRead(int pin)`- read the analog value from a pin (0 to 1023)
+- `int analogRead(int pin)`- read the analog value from a pin (0 to 1023)
 
 ### Servo
 - `Servo.changeId(int currentID, int newID)` - Seting the ID requires a reset of the motor. ID 254 can be used to broadcast to all attached motors
