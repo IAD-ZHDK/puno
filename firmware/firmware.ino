@@ -12,10 +12,14 @@ void setup() {
   Serial.println("-------------------");
   Serial.println("PUNO Server TCP 1.1");
 
+#ifdef ENABLE_IMU
   setupIMU();
+#endif
+
   setupServo();
   setupWiFi();
   setupPUNO();
+  
 #ifdef ENABLE_MDNS
   setupMDNS();
 #endif
@@ -28,7 +32,10 @@ void setup() {
 }
 
 void loop() {
+#ifdef ENABLE_IMU
   updateIMU();
+#endif
+
   updatePUNO();
   wifiUpdate();
 

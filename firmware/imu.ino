@@ -1,3 +1,4 @@
+#ifdef ENABLE_IMU
 float accelX,            accelY,             accelZ,            // units m/s/s i.e. accelZ if often 9.8 (gravity)
       gyroX,             gyroY,              gyroZ,             // units dps (degrees per second)
       gyroDriftX,        gyroDriftY,         gyroDriftZ,        // units dps
@@ -96,3 +97,4 @@ void postProcessIMU() {
   complementaryRoll = 0.98 * complementaryRoll + 0.02 * accRoll;
   complementaryPitch = 0.98 * complementaryPitch + 0.02 * accPitch;
 }
+#endif

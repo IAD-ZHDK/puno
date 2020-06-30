@@ -2,28 +2,35 @@ int keyIndex = 0;
 int status = WL_IDLE_STATUS;
 
 void setupWiFi() {
-  // check for the WiFi module:
+
+#ifdef UBLOX
+  // check for the WiFi module
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
     setLED(INFO_LED_BRIGHTNESS, 0, 0);
     while (true);
   }
+#endif
 
   // set hostname
+#ifdef UBLOX
   WiFi.setHostname(ARDUINO_NAME);
+#endif
 
+#ifdef UBLOX
   String fv = WiFi.firmwareVersion();
   Serial.print("NINA Version: ");
   Serial.println(fv);
   if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
     Serial.println("Please upgrade the firmware");
   }
+#endif
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
     Serial.print("Connecting to SSID: ");
     Serial.println(ssid);
-    status = WiFi.begin(ssid, keyIndex, pass);
+    status = WiFi.begin(ssid, pass);
   }
 
   // once you are connected :
