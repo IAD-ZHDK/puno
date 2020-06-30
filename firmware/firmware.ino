@@ -10,7 +10,7 @@ void setup() {
   setLED(INFO_LED_BRIGHTNESS / 2, INFO_LED_BRIGHTNESS / 2, 0);
 
   Serial.println("-------------------");
-  Serial.println("PUNO Server TCP 1.1");
+  Serial.println("PUNO Server TCP 1.2");
 
 #ifdef ENABLE_IMU
   setupIMU();

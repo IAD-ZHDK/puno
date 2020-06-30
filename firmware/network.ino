@@ -26,11 +26,34 @@ void setupWiFi() {
   }
 #endif
 
+#ifdef ARDUINO_ESP8266_NODEMCU
+  Serial.println("setting STA mode...");
+  WiFi.mode(WIFI_STA);
+#endif
+
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
     Serial.print("Connecting to SSID: ");
     Serial.println(ssid);
     status = WiFi.begin(ssid, pass);
+
+#ifdef ARDUINO_ESP8266_NODEMCU
+    int count = 0;
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(1000);
+      Serial.print(".");
+      status = WiFi.status();
+      count++;
+
+      if (count > 20) {
+        Serial.println();
+        Serial.println("could not connect!");
+        delay(5000);
+        ESP.restart();
+      }
+      Serial.println();
+    }
+#endif
   }
 
   // once you are connected :
